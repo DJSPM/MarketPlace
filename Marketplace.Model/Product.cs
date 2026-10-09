@@ -1,6 +1,6 @@
 ﻿namespace Marketplace.Model
 {
-    public class Product
+    public class Product : IDomainObject
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -18,13 +18,13 @@
         }
 
         /// <summary>
+        /// Пустой конструктор — нужен для EF и Dapper.
+        /// </summary>
+        public Product() { }
+
+        /// <summary>
         /// Конструктор. Создаёт товар с заданными характеристиками.
         /// </summary>
-        /// <param name="id">Уникальный номер записи.</param>
-        /// <param name="name">Название предмета.</param>
-        /// <param name="hero">Герой, к которому относится предмет.</param>
-        /// <param name="price">Цена за одну штуку.</param>
-        /// <param name="count">Количество штук.</param>
         public Product(int id, string name, string hero, double price, int count)
         {
             Id = id;

@@ -6,7 +6,10 @@ namespace Marketplace.WinForms
 {
     public partial class MainForm : Form
     {
-        public static Cart cart = new Cart();
+        /// <summary>
+        /// Корзина. Создаётся в Program.cs и передаётся сюда.
+        /// </summary>
+        public static Cart cart;
 
         /// <summary>
         /// Конструктор. Создаёт элементы формы и обновляет надпись с балансом.
@@ -27,11 +30,9 @@ namespace Marketplace.WinForms
 
         /// <summary>
         /// Обработчик кнопки "Добавить в корзину".
-        /// Определяет выбранный товар, спрашивает количество
-        /// и передаёт данные в Cart.Add.
         /// </summary>
         /// <param name="sender">Кнопка, по которой кликнули.</param>
-        /// <param name="e">Данные события (не используются).</param>
+        /// <param name="e">Данные события.</param>
         private void BtnAdd_Click(object sender, EventArgs e)
         {
             if (lstProducts.SelectedIndex < 0)
@@ -87,10 +88,9 @@ namespace Marketplace.WinForms
 
         /// <summary>
         /// Обработчик кнопки "Корзина".
-        /// Открывает форму корзины, после закрытия обновляет баланс.
         /// </summary>
         /// <param name="sender">Кнопка, по которой кликнули.</param>
-        /// <param name="e">Данные события (не используются).</param>
+        /// <param name="e">Данные события.</param>
         private void BtnCart_Click(object sender, EventArgs e)
         {
             CartForm form = new CartForm();
@@ -100,10 +100,9 @@ namespace Marketplace.WinForms
 
         /// <summary>
         /// Обработчик кнопки "Пополнить".
-        /// Открывает форму пополнения баланса, после закрытия обновляет баланс.
         /// </summary>
         /// <param name="sender">Кнопка, по которой кликнули.</param>
-        /// <param name="e">Данные события (не используются).</param>
+        /// <param name="e">Данные события.</param>
         private void BtnTopUp_Click(object sender, EventArgs e)
         {
             BalanceForm form = new BalanceForm();

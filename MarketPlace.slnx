@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="DataAccessLayer/DataAccessLayer.csproj" Id="8149dd1b-29bb-423a-9c9a-e12eef8922c2" />
   <Project Path="MarketPlace.Console/MarketPlace.Console.csproj" />
   <Project Path="MarketPlace.Logic/MarketPlace.Logic.csproj" />
   <Project Path="Marketplace.Model/Marketplace.Model.csproj" />

@@ -1,14 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using Marketplace.Model;
+using DataAccessLayer;
 
 namespace Marketplace.Logic
 {
     public class Cart
     {
-        private List<Product> products = new List<Product>();
-        private int nextId = 1;
+        private IRepository<Product> repository;
         private double balance = 10000;
+
+        /// <summary>
+        /// Конструктор. Принимает репозиторий (EF или Dapper).
+        /// </summary>
+        /// <param name="repository">Репозиторий для работы с данными.</param>
+        public Cart(IRepository<Product> repository)
+        {
+            this.repository = repository;
+        }
 
         /// <summary>
         /// Возвращает текущий баланс пользователя.
@@ -21,17 +30,15 @@ namespace Marketplace.Logic
 
         /// <summary>
         /// Добавляет новый товар в корзину.
-        /// Создаёт объект Product с текущим номером и кладёт его в список.
         /// </summary>
-        /// <param name="name">Название предмета (например, "Arcana").</param>
+        /// <param name="name">Название предмета.</param>
         /// <param name="hero">Герой, к которому относится предмет.</param>
         /// <param name="price">Цена за одну штуку.</param>
-        /// <param name="count">Сколько штук добавить в корзину.</param>
+        /// <param name="count">Сколько штук добавить.</param>
         public void Add(string name, string hero, double price, int count)
         {
-            Product product = new Product(nextId, name, hero, price, count);
-            nextId = nextId + 1;
-            products.Add(product);
+            Product product = new Product(0, name, hero, price, count);
+            repository.Add(product);
         }
 
         /// <summary>
@@ -41,15 +48,10 @@ namespace Marketplace.Logic
         /// <returns>true, если товар найден и удалён, иначе false.</returns>
         public bool Remove(int id)
         {
-            for (int i = 0; i < products.Count; i++)
-            {
-                if (products[i].Id == id)
-                {
-                    products.RemoveAt(i);
-                    return true;
-                }
-            }
-            return false;
+            var product = repository.ReadById(id);
+            if (product == null) return false;
+            repository.Delete(id);
+            return true;
         }
 
         /// <summary>
@@ -58,22 +60,17 @@ namespace Marketplace.Logic
         /// <returns>Список объектов Product.</returns>
         public List<Product> GetAll()
         {
-            return products;
+            return repository.ReadAll();
         }
 
         /// <summary>
         /// Ищет один товар по ID.
         /// </summary>
         /// <param name="id">Номер записи.</param>
-        /// <returns>Найденный Product или null, если товара нет.</returns>
+        /// <returns>Найденный Product или null.</returns>
         public Product Find(int id)
         {
-            for (int i = 0; i < products.Count; i++)
-            {
-                if (products[i].Id == id)
-                    return products[i];
-            }
-            return null;
+            return repository.ReadById(id);
         }
 
         /// <summary>
@@ -84,9 +81,10 @@ namespace Marketplace.Logic
         /// <returns>true при успехе, false — если товар не найден.</returns>
         public bool UpdateQuantity(int id, int newCount)
         {
-            Product product = Find(id);
+            var product = repository.ReadById(id);
             if (product == null) return false;
             product.Count = newCount;
+            repository.Update(product);
             return true;
         }
 
@@ -97,6 +95,7 @@ namespace Marketplace.Logic
         public double GetSubtotal()
         {
             double sum = 0;
+            var products = repository.ReadAll();
             for (int i = 0; i < products.Count; i++)
             {
                 sum = sum + products[i].GetTotalPrice();
@@ -127,11 +126,11 @@ namespace Marketplace.Logic
 
         /// <summary>
         /// Бизнес-функция 2: оформление покупки.
-        /// Проверяет корзину и баланс, списывает деньги и очищает корзину.
         /// </summary>
         /// <returns>Текстовое сообщение о результате покупки.</returns>
         public string Checkout()
         {
+            var products = repository.ReadAll();
             if (products.Count == 0)
                 return "Корзина пуста";
 
@@ -141,7 +140,12 @@ namespace Marketplace.Logic
                 return "Не хватает денег. Нужно: " + total + ", у вас: " + balance;
 
             balance = balance - total;
-            products.Clear();
+
+            foreach (var product in products)
+            {
+                repository.Delete(product.Id);
+            }
+
             return "Покупка на сумму " + total;
         }
 

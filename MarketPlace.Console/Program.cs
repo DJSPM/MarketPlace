@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Data;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using DataAccessLayer;
 using Marketplace.Logic;
 using Marketplace.Model;
 
@@ -6,10 +10,26 @@ namespace Marketplace.ConsoleApp
 {
     class Program
     {
-        static Cart cart = new Cart();
+        static Cart cart;
 
+        /// <summary>
+        /// Точка входа. Создаёт репозиторий, корзину и запускает меню.
+        /// </summary>
         static void Main()
         {
+            // === Сценарий 1: Entity Framework ===
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseSqlite("Data Source=marketplace.db")
+                .Options;
+            var context = new AppDbContext(options);
+            IRepository<Product> repository = new EntityRepository<Product>(context);
+
+            // === Сценарий 2: Dapper (раскомментируй, если нужно) ===
+            // IDbConnection connection = new SqliteConnection("Data Source=marketplace.db");
+            // IRepository<Product> repository = new DapperRepository<Product>(connection);
+
+            cart = new Cart(repository);
+
             while (true)
             {
                 Console.Clear();
@@ -89,7 +109,7 @@ namespace Marketplace.ConsoleApp
             }
             else if (itemNumber == "5")
             {
-                name = "Ганджубасик";
+                name = "Battle Pass Level 100";
                 hero = "-";
                 price = 30000;
             }
