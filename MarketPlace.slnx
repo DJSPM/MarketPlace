@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="MarketPlace.Console/MarketPlace.Console.csproj" />
+  <Project Path="MarketPlace.Logic/MarketPlace.Logic.csproj" />
+  <Project Path="Marketplace.Model/Marketplace.Model.csproj" />
+  <Project Path="WinFormsApp1/Marketplace.WinForms.csproj" />
+</Solution>
